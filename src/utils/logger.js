@@ -1,28 +1,25 @@
-import { createLogger, format, transports} from "winston";
-import config from "../config/index.js"
+import { createLogger, format, transports } from "winston";
+import config from "../config/index.js";
 
-const { combine, timestamp, printf, errors,colorize,json } = format;
+const { combine, timestamp, printf, errors, colorize, json } = format;
 
-const logFormat = printf(({level, message, timestamp, stack})=>{
+const logFormat = printf(({ level, message, timestamp, stack }) => {
     return stack
-    ? `${timestamp} [${level}]: ${message} - ${stack}`
-    : `${timestamp} [${level}]: ${message}`
-})
+        ? `${timestamp} [${level}]: ${message} - ${stack}`
+        : `${timestamp} [${level}]: ${message}`;
+});
 
 const logger = createLogger({
     level: "info",
-    format : combine(
+    format: combine(
         timestamp(),
-        errors( {stack : true }),
-        config.nodeEnv === "development"
-        ? combine(colorize(), logFormat)
-        : json()
+        errors({ stack: true }),
+        config.nodeEnv === "development" ? combine(colorize(), logFormat) : json(),
     ),
-    transports : [
+    transports: [
         new transports.Console(),
-        new transports.File({ filename : "logs/error.log", level : "error" }),
-        new transports.File({ filename: "logs/combined.log" })
-    ]
-
-})
+        new transports.File({ filename: "logs/error.log", level: "error" }),
+        new transports.File({ filename: "logs/combined.log" }),
+    ],
+});
 export default logger;

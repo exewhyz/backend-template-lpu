@@ -1,8 +1,8 @@
 import morgan from "morgan";
-import logger from "../utils/logger.js"
+import logger from "../utils/logger.js";
 
 const stream = {
-    write : (message) => logger.info(message.trim())
+    write: (message) => logger.info(message.trim()),
 };
 
 const httpLogger = morgan("combined", { stream });
