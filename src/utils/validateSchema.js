@@ -1,16 +1,15 @@
-import { sendResponse } from "./response.js";
+import AppError from "./appError.js";
 
 export const validate = (schema) => {
     return (req, res, next) => {
         const result = schema.safeParse(req.body);
         if (!result.success) {
-            const errorMessage = JSON.parse(result.error.message)
-            return sendResponse(res, {
-                success: result.success,
-                status: 400,
-                message: errorMessage.map((error) => error.message).join(", "),
-                error: errorMessage,
-            });
+            const issues = result.error.issues;
+            const errors = issues.map((issue) => ({
+                field: issue.path.join("."),
+                message: issue.message,
+            }));
+            return next(new AppError("Validation Failed", 400, errors));
         }
         req.body = result.data;
         next();
